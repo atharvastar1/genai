@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORGE-GRPO | Autonomous Reward Optimization</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <!-- Background System -->
+    <div class="bg-system">
+        <div class="bg-noise"></div>
+        <div class="bg-grid"></div>
+        <div class="bg-blobs">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+    </div>
+
+    <div class="container" id="main-content">
+        <header>
+            <div class="header-content">
+                <div class="badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2v20M2 12h20" /></svg>
+                    Academic Case Study: FORGE-GRPO
+                </div>
+                <h1>Self-Improving Reward Logic</h1>
+                <p>Autonomous goal discovery and code refinement via Generative Policy Optimization.</p>
+            </div>
+            <div class="controls-group">
+                <button id="iterate-btn" class="btn-primary" onclick="runIteration()">Launch Optimization Loop</button>
+                <div id="status-msg">System Idle</div>
+            </div>
+        </header>
+
+        <div class="bento-grid">
+            <!-- Feature Cards (Asymmetric Bento) -->
+            <div class="bento-card span-4">
+                <div class="card-label">Phase 01</div>
+                <div class="card-title">Reward Synthesis</div>
+                <p style="color: var(--foreground-muted); font-size: 0.9rem;">Expert LLM drafting and self-critique loop for physics-aligned rewards.</p>
+            </div>
+            <div class="bento-card span-4">
+                <div class="card-label">Phase 02</div>
+                <div class="card-title">Policy Training</div>
+                <p style="color: var(--foreground-muted); font-size: 0.9rem;">PPO agents exploring high-dimensional state spaces in real-time.</p>
+            </div>
+            <div class="bento-card span-4">
+                <div class="card-label">Phase 03</div>
+                <div class="card-title">Diagnostic Loop</div>
+                <p style="color: var(--foreground-muted); font-size: 0.9rem;">Closed-loop failure analysis feeding back into next-gen logic.</p>
+            </div>
+
+            <!-- Dashboard Row -->
+            <div class="bento-card span-8">
+                <div class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                    Reward Performance Evolution
+                </div>
+                <div id="chart-wrapper">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bento-card span-4">
+                <div class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    Live Telemetry
+                </div>
+                <div class="telemetry-container">
+                    <canvas id="visCanvas" width="400" height="200"></canvas>
+                    <div id="telemetry" class="hud">
+                        ANGLE: 0.00°<br>POSITION: 0.00
+                    </div>
+                </div>
+                <div id="vis-label" style="text-align: center; margin-top: 1rem; font-size: 0.8rem; color: var(--accent); font-weight: 600;">
+                    Monitoring...
+                </div>
+            </div>
+
+            <!-- Diagnostics -->
+            <div class="bento-card span-12">
+                <div class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#63e6be" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                    Thought Log & Self-Review
+                </div>
+                <div id="ai-log" class="log-window">
+                    <div class="log-entry"><span class="log-time">[SYSTEM]</span> <span class="log-tag">READY</span> Waiting for initialization...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Results Section -->
+        <div id="group-results-container" style="display: none; margin-top: 3rem; margin-bottom: 5rem;">
+            <div class="card-title" style="margin-bottom: 2rem; font-size: 1.5rem;">
+                <span style="display: inline-block; width: 10px; height: 10px; background: var(--warning); border-radius: 50%;"></span>
+                Candidate Evaluation Cluster (G=3)
+            </div>
+            <div id="group-grid" class="candidate-grid">
+                <!-- candidates injected here -->
+            </div>
+        </div>
+
+        <h2 style="font-size: 1.5rem; margin-bottom: 2rem; margin-top: 4rem;">Optimization History</h2>
+        <div id="history-container">
+            <!-- history items -->
+        </div>
+    </div>
+
+    <script>
+        // Design System Logic: Mouse Tracking
+        document.addEventListener('mousemove', e => {
+            const cards = document.querySelectorAll('.bento-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                card.style.setProperty('--mouse-x', `${x}%`);
+                card.style.setProperty('--mouse-y', `${y}%`);
+            });
+        });
+
+        // App Logic Constants
+        let chart;
+        const historyContainer = document.getElementById('history-container');
+        const statusMsg = document.getElementById('status-msg');
+        const btn = document.getElementById('iterate-btn');
+        const visCanvas = document.getElementById('visCanvas');
+        const visCtx = visCanvas.getContext('2d');
+        const visLabel = document.getElementById('vis-label');
+        const telemetry = document.getElementById('telemetry');
+        const aiLog = document.getElementById('ai-log');
+        const groupGrid = document.getElementById('group-grid');
+        const groupContainer = document.getElementById('group-results-container');
+
+        // Chart Initialization
+        function initChart(data) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(h => `It ${h.iteration}`),
+                    datasets: [{
+                        label: 'Fitness Score',
+                        data: data.map(h => h.score),
+                        borderColor: '#5E6AD2',
+                        backgroundColor: 'rgba(94, 106, 210, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#5E6AD2',
+                        pointBorderColor: 'rgba(255,255,255,0.2)',
+                        pointBorderWidth: 1,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#8A8F98', font: { size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#8A8F98', font: { size: 10 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // Data Fetching
+        async function fetchHistory() {
+            try {
+                const res = await fetch('/api/history');
+                const data = await res.json();
+                renderHistory(data);
+                if (chart) {
+                    chart.data.labels = data.map(h => `It ${h.iteration}`);
+                    chart.data.datasets[0].data = data.map(h => h.score);
+                    chart.update();
+                } else {
+                    initChart(data);
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function renderHistory(data) {
+            historyContainer.innerHTML = '';
+            data.slice().reverse().forEach(h => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="history-header">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="badge" style="margin-bottom: 0;">Iteration ${h.iteration}</div>
+                            <div style="color: var(--foreground-muted); font-size: 0.8rem;">${h.narrative || 'Optimized Policy'}</div>
+                        </div>
+                        <div class="score-pill">
+                            <span style="font-size: 0.7rem; color: var(--foreground-muted); text-transform: uppercase;">Final Score</span>
+                            <div class="score-value">${h.score.toFixed(1)}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                        <div class="badge" style="border-color: rgba(16, 185, 129, 0.2); color: #10B981;">STABILITY: ${h.stability || '0%'}</div>
+                        <div class="badge" style="border-color: rgba(245, 158, 11, 0.2); color: #F59E0B;">PRECISION: ${h.centering || '0%'}</div>
+                    </div>
+                    <div class="card-label">Refined Reward logic</div>
+                    <pre><code>${h.reward_code}</code></pre>
+                `;
+                historyContainer.appendChild(item);
+            });
+        }
+
+        // Viz Engine
+        function drawCartPole(state) {
+            const [x, x_dot, theta, theta_dot] = state;
+            const w = visCanvas.width;
+            const h = visCanvas.height;
+            const poleLen = 80;
+
+            const deg = (theta * 180 / Math.PI).toFixed(2);
+            telemetry.innerHTML = `ANGLE: ${deg}°<br>POSITION: ${x.toFixed(2)}`;
+
+            // Clear with semi-transparent black for slight trail effect
+            visCtx.fillStyle = 'rgba(0,0,0,0.4)';
+            visCtx.fillRect(0, 0, w, h);
+
+            const screenX = (x / 2.4 + 1) * (w / 2);
+            const cartY = 150;
+
+            // Track
+            visCtx.strokeStyle = 'rgba(255,255,255,0.05)';
+            visCtx.lineWidth = 1;
+            visCtx.beginPath();
+            visCtx.moveTo(0, cartY + 15);
+            visCtx.lineTo(w, cartY + 15);
+            visCtx.stroke();
+
+            // Cart
+            visCtx.fillStyle = '#5E6AD2';
+            visCtx.beginPath();
+            visCtx.roundRect(screenX - 30, cartY - 15, 60, 30, 4);
+            visCtx.fill();
+
+            // Pole
+            const ex = screenX + poleLen * Math.sin(theta);
+            const ey = cartY - poleLen * Math.cos(theta);
+            
+            visCtx.strokeStyle = '#EDEDEF';
+            visCtx.lineWidth = 3;
+            visCtx.lineCap = 'round';
+            visCtx.beginPath();
+            visCtx.moveTo(screenX, cartY);
+            visCtx.lineTo(ex, ey);
+            visCtx.stroke();
+
+            // Glow on tip
+            const grd = visCtx.createRadialGradient(ex, ey, 0, ex, ey, 10);
+            grd.addColorStop(0, 'rgba(94, 106, 210, 0.8)');
+            grd.addColorStop(1, 'transparent');
+            visCtx.fillStyle = grd;
+            visCtx.beginPath();
+            visCtx.arc(ex, ey, 10, 0, Math.PI*2);
+            visCtx.fill();
+        }
+
+        let animFrame;
+        function animateTrajectory(traj, labelText) {
+            cancelAnimationFrame(animFrame);
+            let frame = 0;
+            visLabel.innerText = "Simulating: " + labelText;
+            
+            function step() {
+                if (frame < traj.length) {
+                    drawCartPole(traj[frame]);
+                    frame++;
+                    animFrame = requestAnimationFrame(step);
+                } else {
+                    frame = 0; 
+                    setTimeout(() => animFrame = requestAnimationFrame(step), 1000);
+                }
+            }
+            step();
+        }
+
+        // UI Logic
+        function renderGroupResults(results) {
+            groupContainer.style.display = 'block';
+            groupGrid.innerHTML = '';
+            results.forEach(res => {
+                const div = document.createElement('div');
+                const isBest = res.score === Math.max(...results.map(r => r.score));
+                div.className = `candidate-card ${isBest ? 'active' : ''}`;
+                div.innerHTML = `
+                    <div style="font-size: 0.7rem; color: var(--foreground-muted); margin-bottom: 0.5rem;">CANDIDATE ${res.candidate}</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: ${isBest ? 'var(--accent)' : 'inherit'};">${res.score.toFixed(1)}</div>
+                    <div style="font-size: 0.7rem; margin: 1rem 0; color: var(--foreground-subtle); line-height: 1.4;">
+                        ${res.critique.substring(0, 100)}...
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 1rem;">
+                        <span style="font-size: 0.6rem; background: rgba(16, 185, 129, 0.1); color: #10B981; padding: 2px 6px; border-radius: 4px;">S: ${res.stability}</span>
+                        <span style="font-size: 0.6rem; background: rgba(245, 158, 11, 0.1); color: #F59E0B; padding: 2px 6px; border-radius: 4px;">P: ${res.centering}</span>
+                    </div>
+                    <pre style="font-size: 0.6rem; max-height: 60px; padding: 4px; margin-top: 5px;"><code>${res.reward_code}</code></pre>
+                `;
+                groupGrid.appendChild(div);
+            });
+        }
+
+        let lastMsg = "";
+        function log(msg, type='info') {
+            if (msg === lastMsg) return;
+            lastMsg = msg;
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const tag = msg.toUpperCase().includes('FAILED') ? 'ERROR' : (msg.includes('Complete') ? 'DONE' : 'INFO');
+            entry.innerHTML = `<span class="log-time">${new Date().toLocaleTimeString()}</span> <span class="log-tag">${tag}</span> <span>${msg}</span>`;
+            aiLog.appendChild(entry);
+            aiLog.scrollTop = aiLog.scrollHeight;
+        }
+
+        let activePoll = null;
+        async function poll() {
+            try {
+                const res = await fetch('/api/status?t=' + Date.now());
+                const status = await res.json();
+                
+                if (status.busy) {
+                    btn.disabled = true;
+                    btn.innerHTML = `<span class="loader"></span> ${status.progress}%`;
+                    statusMsg.innerText = status.message;
+                    log(status.message);
+                    
+                    const groupRes = await fetch('/api/latest?t=' + Date.now());
+                    const candidates = await groupRes.json();
+                    if (candidates && candidates.length > 0) {
+                        renderGroupResults(candidates);
+                        const last = candidates[candidates.length - 1];
+                        if (last.trajectory) {
+                             animateTrajectory(last.trajectory, `Refining C${last.candidate}`);
+                        }
+                    }
+                } else {
+                    if (activePoll) {
+                        clearInterval(activePoll);
+                        activePoll = null;
+                        btn.disabled = false;
+                        btn.innerHTML = 'Launch Optimization Loop';
+                        statusMsg.innerText = 'Iteration Complete.';
+                        fetchHistory();
+                    }
+                }
+            } catch(e) {}
+        }
+
+        async function runIteration() {
+            if (activePoll) return;
+            try {
+                log("Initializing Optimization Cluster (G=3)...");
+                const res = await fetch('/api/iterate', { method: 'POST' });
+                if (res.ok) {
+                    if (!activePoll) activePoll = setInterval(poll, 2000);
+                }
+            } catch (e) {
+                log("Transport failure: " + e.message, 'error');
+            }
+        }
+
+        // Boot
+        fetchHistory();
+        setInterval(poll, 3000); 
+    </script>
+</body>
+</html>
