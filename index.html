@@ -42,6 +42,30 @@
         </header>
 
         <div class="bento-grid">
+        <!-- Main Comparison View -->
+        <div class="bento-card col-span-3">
+            <div class="card-header">
+                <i class="lucide-layout-grid"></i>
+                <h2>Real-Time Group Comparison (GRPO)</h2>
+            </div>
+            <div class="comparison-container" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                <div class="agent-view">
+                    <h3>Candidate 1</h3>
+                    <canvas id="viz-1" width="300" height="300"></canvas>
+                    <div id="status-1" class="mini-metric">Score: 0</div>
+                </div>
+                <div class="agent-view">
+                    <h3>Candidate 2</h3>
+                    <canvas id="viz-2" width="300" height="300"></canvas>
+                    <div id="status-2" class="mini-metric">Score: 0</div>
+                </div>
+                <div class="agent-view">
+                    <h3>Candidate 3</h3>
+                    <canvas id="viz-3" width="300" height="300"></canvas>
+                    <div id="status-3" class="mini-metric">Score: 0</div>
+                </div>
+            </div>
+        </div>
             <!-- Feature Cards (Asymmetric Bento) -->
             <div class="bento-card span-4">
                 <div class="card-label">Phase 01</div>
