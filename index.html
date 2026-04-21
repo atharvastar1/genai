@@ -10,11 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <!-- Background System -->
     <div class="bg-system">
         <div class="bg-noise"></div>
         <div class="bg-grid"></div>
@@ -30,60 +28,70 @@
             <div class="header-content">
                 <div class="badge">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2v20M2 12h20" /></svg>
-                    Academic Case Study: FORGE-GRPO
+                    Academic Case Study: FORGE-GRPO Pro
                 </div>
                 <h1>Self-Improving Reward Logic</h1>
-                <p>Autonomous goal discovery and code refinement via Generative Policy Optimization.</p>
+                <p>Autonomous goal discovery and code refinement via Group Relative Policy Optimization (Acrobot-v1).</p>
             </div>
             <div class="controls-group">
                 <button id="iterate-btn" class="btn-primary" onclick="runIteration()">Launch Optimization Loop</button>
-                <div id="status-msg">System Idle</div>
+                <div id="status-msg">System Ready</div>
             </div>
         </header>
 
         <div class="bento-grid">
-        <!-- Main Comparison View -->
-        <div class="bento-card col-span-3">
-            <div class="card-header">
-                <i class="lucide-layout-grid"></i>
-                <h2>Real-Time Group Comparison (GRPO)</h2>
-            </div>
-            <div class="comparison-container" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
-                <div class="agent-view">
-                    <h3>Candidate 1</h3>
-                    <canvas id="viz-1" width="300" height="300"></canvas>
-                    <div id="status-1" class="mini-metric">Score: 0</div>
+            <!-- Main Triple Comparison -->
+            <div class="bento-card col-span-3">
+                <div class="card-header" style="margin-bottom: 2rem;">
+                    <div class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        Parallel Evaluation Cluster (Acrobot-v1)
+                    </div>
                 </div>
-                <div class="agent-view">
-                    <h3>Candidate 2</h3>
-                    <canvas id="viz-2" width="300" height="300"></canvas>
-                    <div id="status-2" class="mini-metric">Score: 0</div>
+                <div class="comparison-container" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;">
+                    <div class="agent-view glass-card" id="card-1">
+                        <div class="agent-header">
+                            <h3>Candidate 1</h3>
+                            <div id="badge-1" class="status-badge">STANDBY</div>
+                        </div>
+                        <canvas id="viz-1" width="300" height="200"></canvas>
+                        <div class="logic-peek" id="logic-1" style="font-size: 0.7rem; color: var(--foreground-muted); margin: 10px 0; height: 30px; overflow: hidden;">Waiting...</div>
+                        <div class="live-telemetry">
+                            <canvas id="spark-1" width="280" height="40"></canvas>
+                        </div>
+                        <pre style="font-size: 0.6rem; max-height: 80px; margin-top: 10px;"><code id="code-1"># Code will appear here</code></pre>
+                        <div id="status-1" class="mini-metric">Score: 0.0</div>
+                    </div>
+                    <div class="agent-view glass-card" id="card-2">
+                        <div class="agent-header">
+                            <h3>Candidate 2</h3>
+                            <div id="badge-2" class="status-badge">STANDBY</div>
+                        </div>
+                        <canvas id="viz-2" width="300" height="200"></canvas>
+                        <div class="logic-peek" id="logic-2" style="font-size: 0.7rem; color: var(--foreground-muted); margin: 10px 0; height: 30px; overflow: hidden;">Waiting...</div>
+                        <div class="live-telemetry">
+                            <canvas id="spark-2" width="280" height="40"></canvas>
+                        </div>
+                        <pre style="font-size: 0.6rem; max-height: 80px; margin-top: 10px;"><code id="code-2"># Code will appear here</code></pre>
+                        <div id="status-2" class="mini-metric">Score: 0.0</div>
+                    </div>
+                    <div class="agent-view glass-card" id="card-3">
+                        <div class="agent-header">
+                            <h3>Candidate 3</h3>
+                            <div id="badge-3" class="status-badge">STANDBY</div>
+                        </div>
+                        <canvas id="viz-3" width="300" height="200"></canvas>
+                        <div class="logic-peek" id="logic-3" style="font-size: 0.7rem; color: var(--foreground-muted); margin: 10px 0; height: 30px; overflow: hidden;">Waiting...</div>
+                        <div class="live-telemetry">
+                            <canvas id="spark-3" width="280" height="40"></canvas>
+                        </div>
+                        <pre style="font-size: 0.6rem; max-height: 80px; margin-top: 10px;"><code id="code-3"># Code will appear here</code></pre>
+                        <div id="status-3" class="mini-metric">Score: 0.0</div>
+                    </div>
                 </div>
-                <div class="agent-view">
-                    <h3>Candidate 3</h3>
-                    <canvas id="viz-3" width="300" height="300"></canvas>
-                    <div id="status-3" class="mini-metric">Score: 0</div>
-                </div>
-            </div>
-        </div>
-            <!-- Feature Cards (Asymmetric Bento) -->
-            <div class="bento-card span-4">
-                <div class="card-label">Phase 01</div>
-                <div class="card-title">Reward Synthesis</div>
-                <p style="color: var(--foreground-muted); font-size: 0.9rem;">Expert LLM drafting and self-critique loop for physics-aligned rewards.</p>
-            </div>
-            <div class="bento-card span-4">
-                <div class="card-label">Phase 02</div>
-                <div class="card-title">Policy Training</div>
-                <p style="color: var(--foreground-muted); font-size: 0.9rem;">PPO agents exploring high-dimensional state spaces in real-time.</p>
-            </div>
-            <div class="bento-card span-4">
-                <div class="card-label">Phase 03</div>
-                <div class="card-title">Diagnostic Loop</div>
-                <p style="color: var(--foreground-muted); font-size: 0.9rem;">Closed-loop failure analysis feeding back into next-gen logic.</p>
             </div>
 
-            <!-- Dashboard Row -->
+            <!-- Perf Evolution Chart -->
             <div class="bento-card span-8">
                 <div class="card-title">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
@@ -94,55 +102,26 @@
                 </div>
             </div>
 
+            <!-- Diagnostics -->
             <div class="bento-card span-4">
                 <div class="card-title">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    Live Telemetry
-                </div>
-                <div class="telemetry-container">
-                    <canvas id="visCanvas" width="400" height="200"></canvas>
-                    <div id="telemetry" class="hud">
-                        ANGLE: 0.00°<br>POSITION: 0.00
-                    </div>
-                </div>
-                <div id="vis-label" style="text-align: center; margin-top: 1rem; font-size: 0.8rem; color: var(--accent); font-weight: 600;">
-                    Monitoring...
-                </div>
-            </div>
-
-            <!-- Diagnostics -->
-            <div class="bento-card span-12">
-                <div class="card-title">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#63e6be" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-                    Thought Log & Self-Review
+                    Thought Log
                 </div>
-                <div id="ai-log" class="log-window">
-                    <div class="log-entry"><span class="log-time">[SYSTEM]</span> <span class="log-tag">READY</span> Waiting for initialization...</div>
+                <div id="ai-log" class="log-window" style="height: 250px;">
+                    <div class="log-entry"><span class="log-time">[SYSTEM]</span> <span class="log-tag">READY</span> Loop initialized.</div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Dynamic Results Section -->
-        <div id="group-results-container" style="display: none; margin-top: 3rem; margin-bottom: 5rem;">
-            <div class="card-title" style="margin-bottom: 2rem; font-size: 1.5rem;">
-                <span style="display: inline-block; width: 10px; height: 10px; background: var(--warning); border-radius: 50%;"></span>
-                Candidate Evaluation Cluster (G=3)
-            </div>
-            <div id="group-grid" class="candidate-grid">
-                <!-- candidates injected here -->
             </div>
         </div>
 
         <h2 style="font-size: 1.5rem; margin-bottom: 2rem; margin-top: 4rem;">Optimization History</h2>
-        <div id="history-container">
-            <!-- history items -->
-        </div>
+        <div id="history-container"></div>
     </div>
 
     <script>
         // Design System Logic: Mouse Tracking
         document.addEventListener('mousemove', e => {
-            const cards = document.querySelectorAll('.bento-card');
+            const cards = document.querySelectorAll('.bento-card, .agent-view');
             cards.forEach(card => {
                 const rect = card.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -152,76 +131,95 @@
             });
         });
 
-        // App Logic Constants
-        let chart;
+        let historyChart;
+        const sparks = [null, null, null];
         const historyContainer = document.getElementById('history-container');
         const statusMsg = document.getElementById('status-msg');
-        const btn = document.getElementById('iterate-btn');
-        const visCanvas = document.getElementById('visCanvas');
-        const visCtx = visCanvas.getContext('2d');
-        const visLabel = document.getElementById('vis-label');
-        const telemetry = document.getElementById('telemetry');
         const aiLog = document.getElementById('ai-log');
-        const groupGrid = document.getElementById('group-grid');
-        const groupContainer = document.getElementById('group-results-container');
+        const btn = document.getElementById('iterate-btn');
 
-        // Chart Initialization
-        function initChart(data) {
+        function initSparks() {
+            for(let i=0; i<3; i++) {
+                const ctx = document.getElementById(`spark-${i+1}`).getContext('2d');
+                sparks[i] = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: Array(20).fill(''), datasets: [{ data: Array(20).fill(0), borderColor: '#00f2ff', borderWidth: 1.5, pointRadius: 0, fill: true, backgroundColor: 'rgba(0, 242, 255, 0.05)', tension: 0.4 }] },
+                    options: { responsive: false, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false } } }
+                });
+            }
+        }
+
+        function initHistoryChart(data) {
             const ctx = document.getElementById('performanceChart').getContext('2d');
-            chart = new Chart(ctx, {
+            historyChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: data.map(h => `It ${h.iteration}`),
                     datasets: [{
-                        label: 'Fitness Score',
-                        data: data.map(h => h.score),
-                        borderColor: '#5E6AD2',
-                        backgroundColor: 'rgba(94, 106, 210, 0.1)',
+                        label: 'Achievement',
+                        data: data.map(h => {
+                            let val = Math.max(0, (h.score + 500) / 5);
+                            if (h.height_score) val = parseFloat(h.height_score);
+                            return val;
+                        }),
+                        borderColor: '#00f2ff',
+                        backgroundColor: 'rgba(0, 242, 255, 0.05)',
                         borderWidth: 2,
                         tension: 0.4,
                         fill: true,
-                        pointBackgroundColor: '#5E6AD2',
-                        pointBorderColor: 'rgba(255,255,255,0.2)',
-                        pointBorderWidth: 1,
                         pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointBackgroundColor: '#00f2ff'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
+                        y: { 
+                            beginAtZero: true, max: 100,
                             grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: { color: '#8A8F98', font: { size: 10 } }
+                            ticks: { color: '#888', callback: (v) => v + '%' }
                         },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#8A8F98', font: { size: 10 } }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
+                        x: { grid: { display: false }, ticks: { color: '#888' } }
                     }
                 }
             });
         }
 
-        // Data Fetching
+        async function pollStatus() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                statusMsg.innerText = data.busy ? `🔥 ${data.message || data.msg} (${data.progress}%)` : `✅ System Idle`;
+                
+                // Fetch history every time we poll if busy or just finished
+                if (data.busy || btn.disabled) {
+                    fetchHistory();
+                }
+
+                if (!data.busy && btn.disabled) {
+                    btn.disabled = false;
+                }
+            } catch(e) {}
+        }
+
         async function fetchHistory() {
             try {
                 const res = await fetch('/api/history');
                 const data = await res.json();
                 renderHistory(data);
-                if (chart) {
-                    chart.data.labels = data.map(h => `It ${h.iteration}`);
-                    chart.data.datasets[0].data = data.map(h => h.score);
-                    chart.update();
-                } else {
-                    initChart(data);
-                }
-            } catch(e) { console.error(e); }
+                if (historyChart) {
+                    historyChart.data.labels = data.map(h => `It ${h.iteration}`);
+                    historyChart.data.datasets[0].data = data.map(h => {
+                        // Normalize -500..0 range to 0..100% for Acrobot presentation
+                        let val = Math.max(0, (h.score + 500) / 5);
+                        if (h.height_score) val = parseFloat(h.height_score);
+                        return val;
+                    });
+                    historyChart.update();
+                } else { initHistoryChart(data); }
+            } catch(e) {}
         }
 
         function renderHistory(data) {
@@ -231,184 +229,125 @@
                 item.className = 'history-item';
                 item.innerHTML = `
                     <div class="history-header">
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="badge" style="margin-bottom: 0;">Iteration ${h.iteration}</div>
-                            <div style="color: var(--foreground-muted); font-size: 0.8rem;">${h.narrative || 'Optimized Policy'}</div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="badge">Iteration ${h.iteration}</div>
+                            <div style="font-size: 0.8rem; color: var(--foreground-muted); max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                ${h.narrative || 'Optimizing Acrobot Physics...'}
+                            </div>
                         </div>
-                        <div class="score-pill">
-                            <span style="font-size: 0.7rem; color: var(--foreground-muted); text-transform: uppercase;">Final Score</span>
-                            <div class="score-value">${h.score.toFixed(1)}</div>
-                        </div>
+                        <div class="score-pill"><div class="score-value">${(h.score || 0).toFixed(1)}</div></div>
                     </div>
-                    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-                        <div class="badge" style="border-color: rgba(16, 185, 129, 0.2); color: #10B981;">STABILITY: ${h.stability || '0%'}</div>
-                        <div class="badge" style="border-color: rgba(245, 158, 11, 0.2); color: #F59E0B;">PRECISION: ${h.centering || '0%'}</div>
-                    </div>
-                    <div class="card-label">Refined Reward logic</div>
                     <pre><code>${h.reward_code}</code></pre>
                 `;
                 historyContainer.appendChild(item);
             });
         }
 
-        // Viz Engine
-        function drawCartPole(state) {
-            const [x, x_dot, theta, theta_dot] = state;
-            const w = visCanvas.width;
-            const h = visCanvas.height;
-            const poleLen = 80;
-
-            const deg = (theta * 180 / Math.PI).toFixed(2);
-            telemetry.innerHTML = `ANGLE: ${deg}°<br>POSITION: ${x.toFixed(2)}`;
-
-            // Clear with semi-transparent black for slight trail effect
-            visCtx.fillStyle = 'rgba(0,0,0,0.4)';
-            visCtx.fillRect(0, 0, w, h);
-
-            const screenX = (x / 2.4 + 1) * (w / 2);
-            const cartY = 150;
-
-            // Track
-            visCtx.strokeStyle = 'rgba(255,255,255,0.05)';
-            visCtx.lineWidth = 1;
-            visCtx.beginPath();
-            visCtx.moveTo(0, cartY + 15);
-            visCtx.lineTo(w, cartY + 15);
-            visCtx.stroke();
-
-            // Cart
-            visCtx.fillStyle = '#5E6AD2';
-            visCtx.beginPath();
-            visCtx.roundRect(screenX - 30, cartY - 15, 60, 30, 4);
-            visCtx.fill();
-
-            // Pole
-            const ex = screenX + poleLen * Math.sin(theta);
-            const ey = cartY - poleLen * Math.cos(theta);
-            
-            visCtx.strokeStyle = '#EDEDEF';
-            visCtx.lineWidth = 3;
-            visCtx.lineCap = 'round';
-            visCtx.beginPath();
-            visCtx.moveTo(screenX, cartY);
-            visCtx.lineTo(ex, ey);
-            visCtx.stroke();
-
-            // Glow on tip
-            const grd = visCtx.createRadialGradient(ex, ey, 0, ex, ey, 10);
-            grd.addColorStop(0, 'rgba(94, 106, 210, 0.8)');
-            grd.addColorStop(1, 'transparent');
-            visCtx.fillStyle = grd;
-            visCtx.beginPath();
-            visCtx.arc(ex, ey, 10, 0, Math.PI*2);
-            visCtx.fill();
-        }
-
-        let animFrame;
-        function animateTrajectory(traj, labelText) {
-            cancelAnimationFrame(animFrame);
-            let frame = 0;
-            visLabel.innerText = "Simulating: " + labelText;
-            
-            function step() {
-                if (frame < traj.length) {
-                    drawCartPole(traj[frame]);
-                    frame++;
-                    animFrame = requestAnimationFrame(step);
-                } else {
-                    frame = 0; 
-                    setTimeout(() => animFrame = requestAnimationFrame(step), 1000);
-                }
-            }
-            step();
-        }
-
-        // UI Logic
-        function renderGroupResults(results) {
-            groupContainer.style.display = 'block';
-            groupGrid.innerHTML = '';
-            results.forEach(res => {
-                const div = document.createElement('div');
-                const isBest = res.score === Math.max(...results.map(r => r.score));
-                div.className = `candidate-card ${isBest ? 'active' : ''}`;
-                div.innerHTML = `
-                    <div style="font-size: 0.7rem; color: var(--foreground-muted); margin-bottom: 0.5rem;">CANDIDATE ${res.candidate}</div>
-                    <div style="font-size: 1.5rem; font-weight: 700; color: ${isBest ? 'var(--accent)' : 'inherit'};">${res.score.toFixed(1)}</div>
-                    <div style="font-size: 0.7rem; margin: 1rem 0; color: var(--foreground-subtle); line-height: 1.4;">
-                        ${res.critique.substring(0, 100)}...
-                    </div>
-                    <div style="display: flex; gap: 8px; margin-bottom: 1rem;">
-                        <span style="font-size: 0.6rem; background: rgba(16, 185, 129, 0.1); color: #10B981; padding: 2px 6px; border-radius: 4px;">S: ${res.stability}</span>
-                        <span style="font-size: 0.6rem; background: rgba(245, 158, 11, 0.1); color: #F59E0B; padding: 2px 6px; border-radius: 4px;">P: ${res.centering}</span>
-                    </div>
-                    <pre style="font-size: 0.6rem; max-height: 60px; padding: 4px; margin-top: 5px;"><code>${res.reward_code}</code></pre>
-                `;
-                groupGrid.appendChild(div);
-            });
-        }
-
-        let lastMsg = "";
-        function log(msg, type='info') {
-            if (msg === lastMsg) return;
-            lastMsg = msg;
+        function log(msg) {
             const entry = document.createElement('div');
             entry.className = 'log-entry';
-            const tag = msg.toUpperCase().includes('FAILED') ? 'ERROR' : (msg.includes('Complete') ? 'DONE' : 'INFO');
-            entry.innerHTML = `<span class="log-time">${new Date().toLocaleTimeString()}</span> <span class="log-tag">${tag}</span> <span>${msg}</span>`;
+            entry.innerHTML = `<span class="log-time">${new Date().toLocaleTimeString()}</span> <span class="log-tag">INFO</span> <span>${msg}</span>`;
             aiLog.appendChild(entry);
             aiLog.scrollTop = aiLog.scrollHeight;
         }
 
-        let activePoll = null;
-        async function poll() {
+        async function pollLatest() {
             try {
-                const res = await fetch('/api/status?t=' + Date.now());
-                const status = await res.json();
-                
-                if (status.busy) {
-                    btn.disabled = true;
-                    btn.innerHTML = `<span class="loader"></span> ${status.progress}%`;
-                    statusMsg.innerText = status.message;
-                    log(status.message);
+                const resp = await fetch('/api/latest');
+                const candidates = await resp.json();
+                candidates.forEach((c, idx) => {
+                    const canvas = document.getElementById(`viz-${idx + 1}`);
+                    const badge = document.getElementById(`badge-${idx + 1}`);
+                    const card = document.getElementById(`card-${idx + 1}`);
+                    const statusStr = document.getElementById(`status-${idx + 1}`);
+                    const logicStr = document.getElementById(`logic-${idx + 1}`);
+                    const codeBlock = document.getElementById(`code-${idx + 1}`);
                     
-                    const groupRes = await fetch('/api/latest?t=' + Date.now());
-                    const candidates = await groupRes.json();
-                    if (candidates && candidates.length > 0) {
-                        renderGroupResults(candidates);
-                        const last = candidates[candidates.length - 1];
-                        if (last.trajectory) {
-                             animateTrajectory(last.trajectory, `Refining C${last.candidate}`);
+                    if (c.trajectory && c.trajectory.length > 0) {
+                        renderAcrobot(canvas, c.trajectory);
+                        
+                        // Set Code and Logic
+                        logicStr.innerText = c.draft || "Evaluating physics...";
+                        codeBlock.innerText = c.reward_code || "";
+                        
+                        // Sparkline telemetry update
+                        const frameIdx = Math.floor(Date.now()/50) % c.trajectory.length;
+                        const val = c.trajectory[frameIdx][0]; // Height-ish variable
+                        sparks[idx].data.datasets[0].data.shift();
+                        sparks[idx].data.datasets[0].data.push(val);
+                        sparks[idx].update('none');
+
+                        // Status Badge Logic
+                        if (c.advantage > 0) {
+                            badge.innerText = "AWARDED";
+                            badge.className = "status-badge badge-awarded";
+                            card.classList.add('card-awarded');
+                        } else if (c.advantage < 0) {
+                            badge.innerText = "PUNISHED";
+                            badge.className = "status-badge badge-punished";
+                            card.classList.add('card-punished');
+                        } else {
+                            badge.innerText = "READY";
+                            badge.className = "status-badge";
+                            badge.style.color = "#00f2ff";
                         }
+                        statusStr.innerHTML = `Height Perf: <b>${c.height_score || '0%'}</b>`;
                     }
-                } else {
-                    if (activePoll) {
-                        clearInterval(activePoll);
-                        activePoll = null;
-                        btn.disabled = false;
-                        btn.innerHTML = 'Launch Optimization Loop';
-                        statusMsg.innerText = 'Iteration Complete.';
-                        fetchHistory();
-                    }
-                }
-            } catch(e) {}
+                });
+            } catch (e) { console.error("Poll Latest Error:", e); }
+        }
+
+        function renderAcrobot(canvas, trajectory) {
+            const ctx = canvas.getContext('2d');
+            const frameIdx = Math.floor(Date.now() / 50) % trajectory.length;
+            const frame = trajectory[frameIdx];
+            if (!frame || frame.length < 4) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2, cy = canvas.height / 2;
+            const L1 = 45, L2 = 45;
+
+            // Joints
+            const x1 = cx + L1 * frame[1], y1 = cy - L1 * frame[0];
+            const cos12 = frame[0] * frame[2] - frame[1] * frame[3];
+            const sin12 = frame[1] * frame[2] + frame[0] * frame[3];
+            const x2 = x1 + L2 * sin12, y2 = y1 - L2 * cos12;
+
+            // Goal Line (Dynamic)
+            ctx.strokeStyle = 'rgba(0, 242, 255, 0.1)';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath(); ctx.moveTo(0, cy - 65); ctx.lineTo(canvas.width, cy - 65); ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Link Glow
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#00f2ff';
+            
+            // Link 1
+            ctx.strokeStyle = '#00f2ff'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x1, y1); ctx.stroke();
+            
+            // Link 2
+            ctx.strokeStyle = '#7000ff'; ctx.shadowColor = '#7000ff';
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+            
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#fff';
+            ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(x1, y1, 4, 0, Math.PI*2); ctx.fill();
         }
 
         async function runIteration() {
-            if (activePoll) return;
-            try {
-                log("Initializing Optimization Cluster (G=3)...");
-                const res = await fetch('/api/iterate', { method: 'POST' });
-                if (res.ok) {
-                    if (!activePoll) activePoll = setInterval(poll, 2000);
-                }
-            } catch (e) {
-                log("Transport failure: " + e.message, 'error');
-            }
+            statusMsg.innerText = "🔥 Initializing GRPO Loop...";
+            btn.disabled = true;
+            log("Starting evaluation cluster...");
+            try { await fetch('/api/iterate', { method: 'POST' }); } catch(e) { btn.disabled = false; }
         }
 
-        // Boot
+        initSparks();
+        setInterval(pollLatest, 1000);
+        setInterval(pollStatus, 3000);
         fetchHistory();
-        setInterval(poll, 3000); 
     </script>
 </body>
 </html>

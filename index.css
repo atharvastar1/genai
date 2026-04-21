@@ -451,3 +451,102 @@ pre {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
+/* --- Presentation Mode --- */
+.agent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.status-badge {
+    padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; background: rgba(255,255,255,0.1);
+    color: #888; border: 1px solid rgba(255,255,255,0.05);
+}
+/* --- PREMIUM UI/UX OVERRIDES --- */
+
+/* Custom Glass Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+::-webkit-scrollbar-thumb { 
+    background: rgba(94, 106, 210, 0.2); 
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(94, 106, 210, 0.4); }
+
+/* Smooth Global Transitions */
+* { transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Refined Agent View Transitions */
+.agent-view {
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+.agent-view:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(94, 106, 210, 0.1);
+}
+
+/* Logic Peek Polish */
+.logic-peek {
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.01em;
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* History Card Animation */
+.history-item {
+    animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Badge Pulsing Glow (Awarded State) */
+.card-awarded {
+    box-shadow: 0 0 40px rgba(0, 242, 255, 0.15) !important;
+    border-color: rgba(0, 242, 255, 0.4) !important;
+}
+
+.badge-awarded {
+    animation: glow-pulse 2s infinite ease-in-out;
+}
+
+@keyframes glow-pulse {
+    0% { box-shadow: 0 0 5px rgba(0, 242, 255, 0.2); }
+    50% { box-shadow: 0 0 15px rgba(0, 242, 255, 0.5); }
+    100% { box-shadow: 0 0 5px rgba(0, 242, 255, 0.2); }
+}
+.badge-punished { 
+    background: hsla(280, 100%, 70%, 0.1) !important; 
+    color: #a855f7 !important; 
+    border-color: rgba(168, 85, 247, 0.3) !important; 
+}
+.glass-card { 
+    background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+    border: 1px solid var(--border-default);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-awarded { border-color: rgba(0, 242, 255, 0.3) !important; background: rgba(0, 242, 255, 0.02) !important; }
+.card-punished { border-color: rgba(168, 85, 247, 0.2) !important; opacity: 0.8; }
+
+.live-telemetry { 
+    margin: 1rem 0; 
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.03);
+}
+
+@keyframes badge-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}

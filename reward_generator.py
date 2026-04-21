@@ -1,16 +1,24 @@
 import os
 import json
 import re
-from openai import OpenAI
-from dotenv import load_dotenv
+try:
+    from openai import OpenAI
+    HAS_OPENAI = True
+except ImportError:
+    HAS_OPENAI = False
 
+from dotenv import load_dotenv
 load_dotenv()
 
 # Setup OpenAI-compatible client
-client = OpenAI(
-    api_key=os.getenv("LLM_API_KEY", "EMPTY"),
-    base_url=os.getenv("LLM_API_BASE", "http://localhost:11434/v1")
-)
+if HAS_OPENAI:
+    client = OpenAI(
+        api_key=os.getenv("LLM_API_KEY", "EMPTY"),
+        base_url=os.getenv("LLM_API_BASE", "http://localhost:11434/v1")
+    )
+else:
+    client = None
+
 MODEL = os.getenv("LLM_MODEL", "llama3")
 
 KNOWLEDGE_FILE = "knowledge_bank.json"
@@ -43,22 +51,22 @@ def generate_reward_candidates(iteration, history):
     
     api_key = os.getenv("LLM_API_KEY")
     if not api_key or api_key == "your_api_key_here":
-        # Professional Mock Candidates for Acrobot
+        # Expert Fallback Candidates for Acrobot Swing-up
         return [
             {
-                "critique": "Basic potential energy reward.",
-                "draft": "Maximize height by using cos values.",
-                "code": "def reward_fn(obs):\n    # Height is roughly -cos(theta1) - cos(theta1+theta2)\n    height = -obs[0] - (obs[0]*obs[2] - obs[1]*obs[3])\n    return height"
+                "critique": "Potential energy baseline.",
+                "draft": "Maximize height sum to push joints upward.",
+                "code": "def reward_fn(obs):\n    # obs[0]=cos(th1), obs[2]=cos(th2)\n    # Height is high when cos values are negative\n    h1 = -obs[0]\n    h2 = -obs[2]\n    return h1 + h2"
             },
             {
-                "critique": "Adding velocity damping to prevent wild spinning.",
-                "draft": "Height + negative velocity penalty.",
-                "code": "def reward_fn(obs):\n    height = -obs[0] - (obs[0]*obs[2] - obs[1]*obs[3])\n    velocity_penalty = 0.1 * (abs(obs[4]) + abs(obs[5]))\n    return height - velocity_penalty"
+                "critique": "Energy pumping strategy.",
+                "draft": "Reward angular velocity when below goal to build momentum.",
+                "code": "def reward_fn(obs):\n    height = -obs[0] - obs[2]\n    # Pump energy if we are low\n    velocity_bonus = 0.1 * (abs(obs[4]) + abs(obs[5])) if height < 1.0 else 0.0\n    return height + velocity_bonus"
             },
             {
-                "critique": "Joint centering to keep momentum efficient.",
-                "draft": "Height + centered sin bonus.",
-                "code": "def reward_fn(obs):\n    height = -obs[0] - (obs[0]*obs[2] - obs[1]*obs[3])\n    shaping = 0.5 * (1.0 - abs(obs[1])) # Bonus for being vertical\n    return height + shaping"
+                "critique": "Singular point avoidance.",
+                "draft": "Reward height but penalize extreme joint folding.",
+                "code": "def reward_fn(obs):\n    height = -obs[0] - obs[2]\n    # obs[2] is cos of joint 2 relative to joint 1 usually\n    folding_penalty = 0.5 * abs(obs[3]) # Penalize sin of joint 2\n    return height - folding_penalty"
             }
         ]
 
@@ -73,6 +81,8 @@ def generate_reward_candidates(iteration, history):
     final_prompt = prompt + f"\n\nPrevious Research History:\n{history_text}"
 
     try:
+        if not HAS_OPENAI:
+            raise ImportError("OpenAI library not installed.")
         client = OpenAI(api_key=api_key)
         response = client.chat.completions.create(
             model=MODEL,

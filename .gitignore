@@ -1,6 +1,10 @@
 venv/
 __pycache__/
 *.json
+!history.json
+!knowledge_bank.json
+!status.json
+!latest_group.json
 .env
 .DS_Store
 *.pyc
